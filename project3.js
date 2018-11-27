@@ -1,14 +1,10 @@
 $(document).ready(function() {
-    console.log("debug 1");
-
     /*
      * Add task to the database
      */
     $("#addTask").click(function() {
 
 		$.get("addTask.php", {"description": $("#task").val()}, function(t) {
-			console.log(t.id);
-			console.log(t.description);
 		}, "json");
 
     })
@@ -18,10 +14,8 @@ $(document).ready(function() {
      * to page
      */
     $.get("allTasks.php", function(t) {
-        // console.log(t);
 
         $(t).find("task").each(function() {
-            console.log($(this).find("description").text());
             var taskText = $("<li></li>").text($(this).find("description").text());
             $(taskText).addClass($(this).find("id").text());
             $("#toDoList").append(taskText);
@@ -30,24 +24,8 @@ $(document).ready(function() {
         });
 
     }, "xml");
-
 })
 
-/*
- * Function to display task to page as an li
- */
-// function outputTasks(id, task) {
-//     // var deleteButton = $("<input type='button' value='delete' />");
-//     deleteButton.click(function() {
-//
-//         $.get("deleteTask.php", {"id": id}, function(t) {
-//             if (t == 1) {
-//                 // remove task from user interface
-//             }
-//         })
-//     })
-//
-// }
 
 /*
  * Function to add task from text box to clientside display
@@ -60,34 +38,30 @@ $(function() {
         $("#task").val("");
         refreshLi();
     })
-
 })
-
 
 
 /*
  * Function that will be called when page is first loaded and when new tasks
- * are created so they can be deleted
+ * are created. Also, somehow magically responsible for deleting tasks from
+ * server and client sides. Tried refactoring so delete and highlighting of li
+ * where in their own methods to no avail.
  */
 function refreshLi() {
-    // Delete tasks for clientside
+    /*
+     * Delete tasks for clientside and serverside.... TODO - figure out why the
+     * hell this actually works, cuz right now it's just magic
+     */
     $("#toDoList li").click(function() {
-        console.log($(this).attr("class"));
+        // Remove task for UI
         $(this).remove();
+        // Remove task from serverside
         $.get("deleteTask.php", {"id": $(this).attr("class")}, function(t) {
             if (t == 1) {
-                // remove task from user interface
-
             }
 
         })
     })
-    // TODO delete task with serverside code
-    // $.get("deleteTask.php", {"id": id}, function(t) {
-    //     if (t == 1) {
-    //         // remove task from user interface
-    //     }
-
 
     // Highlight li on mouseover (just for fun)
     $("#toDoList li").mouseover(function() {
@@ -96,6 +70,4 @@ function refreshLi() {
     $("#toDoList li").mouseout(function() {
         $(this).css("background-color", "white");
     })
-
 }
-    refreshLi();
